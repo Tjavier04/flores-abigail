@@ -1,5 +1,5 @@
 /* ================================================================
-   estilos.css — 🌼 Para Abigail. Mobile-first, estilo doodle pastel.
+   estilos.css — 🌼💜 Para mi niña. Mobile-first, doodle pastel.
    ================================================================ */
 
 :root{
@@ -21,7 +21,9 @@
   --menta-clara:#CBEAE6;
   --lila:#AAAFEB;
   --lila-clara:#D3D6F5;
+  --lila-fuerte:#8E93E6;
   --mostaza:#A9761A;
+  --rojo-suave:#E98787;
 
   --sombra:0 8px 0 rgba(91,65,55,.13);
   --sombra-suave:0 4px 0 rgba(91,65,55,.10);
@@ -44,7 +46,7 @@ body{
   background:var(--crema);
   background-image:
     radial-gradient(circle at 10% 6%,  rgba(248,223,140,.45) 0, transparent 40%),
-    radial-gradient(circle at 92% 20%, rgba(242,169,196,.30) 0, transparent 38%),
+    radial-gradient(circle at 92% 20%, rgba(170,175,235,.32) 0, transparent 38%),
     radial-gradient(circle at 50% 100%,rgba(166,219,212,.35) 0, transparent 46%);
   background-attachment:fixed;
   min-height:100svh;
@@ -64,16 +66,16 @@ body{
   display:flex;flex-direction:column;
 }
 
-#app.con-musica{padding-bottom:calc(env(safe-area-inset-bottom) + 150px)}
+#app.con-musica{padding-bottom:calc(env(safe-area-inset-bottom) + 100px)}
 
 .pantalla{
   flex:1;display:flex;flex-direction:column;
   justify-content:center;align-items:center;
-  text-align:center;gap:18px;
+  text-align:center;gap:16px;
   animation:entrar .55s cubic-bezier(.22,1,.36,1) both;
 }
 .pantalla.saliendo{animation:salir .32s ease-in forwards}
-.pantalla-carta{justify-content:flex-start;padding-top:8px}
+.pantalla-papiro,.pantalla-final{justify-content:flex-start;padding-top:4px}
 @keyframes entrar{from{opacity:0;transform:translateY(22px) scale(.985)}to{opacity:1;transform:none}}
 @keyframes salir{to{opacity:0;transform:translateY(-16px) scale(.99)}}
 
@@ -85,7 +87,7 @@ body{
 }
 .nombre{
   font-family:'Parisienne',cursive;
-  font-size:clamp(3.4rem,20vw,5rem);line-height:.95;
+  font-size:clamp(3.2rem,18vw,4.6rem);line-height:.95;
   color:var(--cafe);margin:.08em 0 0;
   text-shadow:0 2px 0 rgba(255,255,255,.8);
 }
@@ -105,6 +107,10 @@ h1.titulo{
   margin:0;max-width:30ch;text-wrap:pretty;
 }
 .pie{font-size:.82rem;color:var(--tinta-suave);margin:0}
+.pie-error{
+  min-height:1.2em;font-size:.84rem;font-weight:700;
+  color:var(--rojo-suave);margin:0;
+}
 
 /* ---------------- botones ---------------- */
 .boton{
@@ -121,11 +127,11 @@ h1.titulo{
 .boton:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(91,65,55,.13);background:var(--flor-amarilla-h)}
 
 .boton-fantasma{
-  background:var(--menta-clara);
+  background:var(--lila-clara);
   box-shadow:var(--sombra-suave);
   font-weight:700;padding:13px 26px;min-height:48px;font-size:.95rem;
 }
-.boton-fantasma:active{background:var(--menta)}
+.boton-fantasma:active{background:var(--lila)}
 
 /* ---------------- tarjetas de opción ---------------- */
 .opciones{
@@ -135,7 +141,7 @@ h1.titulo{
 .opcion{
   display:flex;align-items:center;gap:13px;
   width:100%;text-align:left;
-  font-family:var(--texto);font-size:1.04rem;font-weight:700;color:var(--cafe);
+  font-family:var(--texto);font-size:1.02rem;font-weight:700;color:var(--cafe);
   background:#fff;
   border:var(--borde);
   border-radius:20px;
@@ -149,18 +155,27 @@ h1.titulo{
 .opcion:nth-child(2){animation-delay:.13s}
 .opcion:nth-child(3){animation-delay:.21s}
 .opcion:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(91,65,55,.1)}
-.opcion.elegida{
-  background:var(--flor-amarilla);
-  transform:scale(1.02);
-  box-shadow:var(--sombra);
-}
-.opcion:disabled{cursor:default;opacity:1}
-.opcion:disabled:not(.elegida){opacity:.45}
+.opcion:disabled{cursor:default}
 .opcion .bolita{
   flex:0 0 auto;width:34px;height:34px;border-radius:50%;
   display:grid;place-items:center;
   background:var(--papel-hondo);border:2px solid var(--cafe);
-  font-size:.95rem;
+}
+
+.opcion.correcta{
+  background:var(--flor-amarilla);
+  transform:scale(1.02);
+  box-shadow:var(--sombra);
+}
+.opcion.incorrecta{
+  animation:sacudir .45s cubic-bezier(.36,.07,.19,.97) both;
+  background:#FBE4E4;border-color:var(--rojo-suave);
+}
+@keyframes sacudir{
+  10%,90%{transform:translateX(-2px)}
+  20%,80%{transform:translateX(4px)}
+  30%,50%,70%{transform:translateX(-7px)}
+  40%,60%{transform:translateX(7px)}
 }
 
 /* ---------------- tarjetas de canción ---------------- */
@@ -180,44 +195,25 @@ h1.titulo{
 .cancion:nth-child(3){animation-delay:.26s}
 .cancion:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(91,65,55,.1)}
 .cancion.elegida{background:var(--flor-amarilla);box-shadow:var(--sombra)}
+.cancion:disabled:not(.elegida){opacity:.45}
 .cancion .flor-mini{flex:0 0 auto;display:grid;place-items:center;width:56px;height:56px}
-.cancion .txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cancion .txt{display:flex;flex-direction:column;gap:3px;min-width:0}
 .cancion .t{font-family:var(--display);font-weight:600;font-size:1.02rem;line-height:1.2;color:var(--cafe)}
-.cancion .a{font-size:.76rem;color:var(--tinta-suave)}
+.cancion .a{font-size:.76rem;color:var(--tinta-suave);display:flex;align-items:center;gap:5px}
 
-/* ---------------- cascada de fotos ---------------- */
-.cascada{
-  position:relative;width:100%;
-  height:var(--alto,300px);
-  transition:height .7s cubic-bezier(.22,1,.36,1);
+/* ---------------- ramillete bultoso (adorno principal) ---------------- */
+.ramillete{
+  display:flex;align-items:flex-end;justify-content:center;
+  flex-wrap:wrap;gap:0;margin:0 -10px 4px;
+  max-width:300px;
 }
-.cascada .pila{position:absolute;inset:0;transform-origin:50% 0%;
-  transition:transform .7s cubic-bezier(.22,1,.36,1)}
-.cascada.compacta{height:var(--alto-min,140px)}
-.cascada.compacta .pila{transform:scale(.44)}
-
-/* bloque de pregunta + opciones (aparece cuando ya cayeron las fotos) */
-.bloque{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
-.bloque[hidden]{display:none}
-.bloque.aparece{animation:entrar .65s cubic-bezier(.22,1,.36,1) both}
-.foto{
-  position:absolute;width:136px;margin:0;
-  background:#fff;padding:8px;
-  border:var(--borde);border-radius:20px;
-  box-shadow:0 6px 0 rgba(91,65,55,.14);
-  transform-origin:50% 0%;
-  animation:caer .95s cubic-bezier(.3,1.25,.5,1) both;
+.pieza-ramillete{
+  margin:-9px -10px;
+  animation:mecer 6s ease-in-out infinite;
+  animation-delay:calc(var(--i, 0) * .15s);
+  transform-origin:50% 85%;
 }
-.foto img,.foto .marco{
-  display:block;width:100%;aspect-ratio:3/4;object-fit:cover;
-  border-radius:13px;background:var(--papel-hondo);
-}
-.foto .marco{display:grid;place-items:center}
-@keyframes caer{
-  0%{opacity:0;transform:translateX(-50%) translateY(-130%) rotate(var(--giro-ini,-14deg)) scale(.86)}
-  70%{opacity:1}
-  100%{opacity:1;transform:translateX(-50%) translateY(0) rotate(var(--giro,0deg)) scale(1)}
-}
+.pieza-ramillete:nth-child(odd){animation-duration:5.2s}
 
 /* ---------------- confeti de pétalos ---------------- */
 #confeti{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}
@@ -229,68 +225,87 @@ h1.titulo{
 }
 
 /* ---------------- celebración ---------------- */
-.celebra{display:flex;flex-direction:column;align-items:center;gap:8px}
+.celebra{display:flex;flex-direction:column;align-items:center;gap:6px}
 .grito{
   font-family:var(--display);font-weight:900;
-  font-size:clamp(2.4rem,13vw,3.4rem);line-height:.95;letter-spacing:-.02em;
+  font-size:clamp(2.3rem,12.5vw,3.2rem);line-height:.95;letter-spacing:-.02em;
   color:var(--mostaza);margin:0;
   animation:latir .7s cubic-bezier(.34,1.56,.64,1) both;
 }
-.beso{
-  font-family:var(--script);font-weight:700;
-  font-size:clamp(2.4rem,12vw,3.2rem);color:var(--flor-rosa);margin:-.1em 0 0;
-  animation:latir .7s .12s cubic-bezier(.34,1.56,.64,1) both;
-}
+.emoji-grande{font-size:clamp(2.2rem,10vw,2.8rem);margin:2px 0 0;animation:latir .7s .12s cubic-bezier(.34,1.56,.64,1) both}
 @keyframes latir{0%{opacity:0;transform:scale(.55) rotate(-6deg)}60%{transform:scale(1.12) rotate(2deg)}100%{opacity:1;transform:none}}
 
-/* ---------------- jardín final ---------------- */
-.jardin{
-  position:relative;width:100%;min-height:200px;
-  display:flex;align-items:flex-end;justify-content:center;gap:0;
-  padding-bottom:6px;
+/* ---------------- mensaje intro (antes del juego) ---------------- */
+.carta-mini{
+  width:100%;max-width:360px;text-align:left;
+  background:var(--papel);border:var(--borde);border-radius:var(--radio);
+  padding:22px 20px;box-shadow:var(--sombra);
 }
-.jardin .tallo{
-  display:flex;flex-direction:column;align-items:center;margin:0 -4px;
-  animation:crecer .8s cubic-bezier(.22,1,.36,1) both;transform-origin:50% 100%;
-}
-.jardin .tallo svg{display:block;margin-bottom:-13px}
-.jardin .tallo i{display:block;width:3.5px;border-radius:2px;background:var(--cafe)}
-@keyframes crecer{from{opacity:0;transform:scaleY(.1) translateY(20px)}to{opacity:1;transform:none}}
-.suelo{
-  width:100%;max-width:340px;height:4px;border-radius:4px;
-  background:linear-gradient(90deg,transparent,var(--menta),transparent);
-}
+.carta-mini p{font-size:1rem;line-height:1.68;margin:0 0 12px;color:#5E4A3E;white-space:pre-line}
+.carta-mini p:last-child{margin-bottom:0}
 
-/* ---------------- carta final ---------------- */
-.carta{
-  width:100%;max-width:372px;text-align:left;
-  background:var(--papel);
-  border:var(--borde);
-  border-radius:var(--radio);
+/* ---------------- poema (tarjetitas deslizables) ---------------- */
+.pantalla-poema{cursor:pointer;gap:20px}
+.tarjeta-poema{
+  width:100%;max-width:340px;min-height:140px;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff;border:var(--borde);border-radius:var(--radio);
+  padding:30px 22px;box-shadow:var(--sombra);
+}
+.tarjeta-poema p{
+  font-family:var(--script);font-weight:700;
+  font-size:clamp(1.5rem,7vw,1.95rem);line-height:1.35;
+  color:var(--cafe);margin:0;text-wrap:balance;
+}
+.pie-poema{animation:parpadea 1.8s ease-in-out infinite}
+@keyframes parpadea{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* ---------------- papiro (Frida) ---------------- */
+.papiro{
+  position:relative;width:100%;max-width:372px;text-align:left;
+  background:
+    repeating-linear-gradient(0deg, rgba(169,118,26,.05) 0 2px, transparent 2px 5px),
+    linear-gradient(175deg,#FCF3DC,#F3E2B8);
+  border:2.5px solid #9C7A3C;
+  border-radius:16px;
   padding:26px 22px 22px;
-  box-shadow:var(--sombra);
-  position:relative;
+  box-shadow:0 8px 0 rgba(120,90,40,.16), inset 0 0 0 6px rgba(255,252,240,.5);
   animation:abrirCarta .75s cubic-bezier(.22,1,.36,1) both;
 }
 @keyframes abrirCarta{from{opacity:0;transform:translateY(26px) rotateX(16deg)}to{opacity:1;transform:none}}
-.carta h2{
-  font-family:var(--script);font-weight:700;font-size:2.05rem;
-  margin:0 0 14px;color:var(--cafe);text-align:center;
+.papiro h2{
+  font-family:var(--script);font-weight:700;font-size:2rem;
+  margin:0 0 14px;color:#7A5A22;text-align:center;
 }
-.carta p{font-size:1.02rem;line-height:1.72;margin:0 0 14px;color:#5E4A3E}
-.carta .firma{
-  font-family:var(--script);font-size:1.55rem;color:var(--mostaza);
-  text-align:right;margin:18px 0 0;
+.papiro p{font-family:var(--display);font-size:.94rem;line-height:1.7;margin:0 0 13px;color:#5B4423}
+.esquina-papiro{position:absolute;pointer-events:none}
+.esquina-papiro.ar{top:-20px;right:-10px}
+.esquina-papiro.ai{bottom:-20px;left:-12px}
+
+.foto-papiro{
+  margin:0 0 16px;border-radius:12px;overflow:hidden;
+  border:2px solid #9C7A3C;box-shadow:0 4px 0 rgba(120,90,40,.15);
 }
-.carta .esquina{position:absolute;pointer-events:none}
-.carta .esquina.ar{top:-20px;right:-10px}
-.carta .esquina.ai{bottom:-22px;left:-12px}
+.foto-papiro img{display:block;width:100%;max-height:280px;object-fit:cover}
+
+/* ---------------- final ---------------- */
+.foto-final{
+  width:100%;max-width:372px;margin:0;
+  border-radius:var(--radio);overflow:hidden;
+  border:var(--borde);box-shadow:var(--sombra);
+}
+.foto-final img{display:block;width:100%;max-height:60svh;object-fit:cover}
+.frase-final{
+  font-family:var(--script);font-weight:700;
+  font-size:clamp(1.7rem,8vw,2.3rem);line-height:1.2;
+  color:var(--lila-fuerte);margin:4px 0 0;text-wrap:balance;
+  text-shadow:0 2px 0 rgba(255,255,255,.7);
+}
 
 /* ---------------- adornos ---------------- */
-.guirnalda{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:-6px}
-.flor-grande{animation:mecer 5s ease-in-out infinite;transform-origin:50% 90%}
+.flor-grande{animation:mecer 5s ease-in-out infinite;transform-origin:50% 90%;display:flex;justify-content:center}
 @keyframes mecer{0%,100%{transform:rotate(-3.5deg)}50%{transform:rotate(3.5deg)}}
-.fondo-flor{position:fixed;opacity:.55;pointer-events:none;z-index:0;animation:mecer 7s ease-in-out infinite}
+.fondo-flor{position:fixed;opacity:.5;pointer-events:none;z-index:0;animation:mecer 7s ease-in-out infinite}
 
 /* ---------------- progreso ---------------- */
 .progreso{display:flex;gap:8px;justify-content:center;align-items:center}
@@ -300,52 +315,40 @@ h1.titulo{
   transition:all .3s;
 }
 .progreso span.hecha{background:var(--flor-amarilla);opacity:1}
-.progreso span.activa{background:var(--flor-rosa);opacity:1;transform:scale(1.3)}
+.progreso span.activa{background:var(--lila-fuerte);opacity:1;transform:scale(1.3)}
 
-/* ---------------- reproductor ---------------- */
+/* ---------------- reproductor (audio local) ---------------- */
 #reproductor{
   position:fixed;left:50%;transform:translateX(-50%);
   bottom:calc(env(safe-area-inset-bottom) + 12px);
   width:calc(100% - 24px);max-width:416px;
   z-index:35;
-  border-radius:20px;
+  border-radius:999px;
   background:var(--crema);
   border:var(--borde);
   box-shadow:var(--sombra);
   overflow:hidden;
-  transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s;
 }
 #reproductor[hidden]{display:none}
 #reproductor .barra{
-  display:flex;align-items:center;gap:9px;
-  padding:7px 8px 7px 14px;
-  font-size:.79rem;font-weight:800;color:var(--cafe);
+  display:flex;align-items:center;gap:10px;
+  padding:6px 8px 6px 6px;
 }
-#reproductor .barra .crece{flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#reproductor .barra .crece{
+  flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:.85rem;font-weight:800;color:var(--cafe);
+}
 #reproductor .mini{
-  border:none;background:transparent;font-size:1rem;cursor:pointer;
-  width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--cafe);
+  border:2px solid var(--cafe);background:var(--flor-amarilla);font-size:1rem;cursor:pointer;
+  flex:0 0 auto;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--cafe);
+  transition:transform .15s;
 }
-#reproductor iframe,#reproductor #marco-spotify{display:block;width:100%;border:0}
-#reproductor iframe{height:80px}
-#reproductor #marco-spotify{
-  transition:max-height .35s cubic-bezier(.22,1,.36,1),opacity .25s;
-  max-height:140px;overflow:hidden;
-}
-#reproductor.plegado #marco-spotify{max-height:0;opacity:0}
-#reproductor #marco-spotify{min-height:80px;background:var(--papel-hondo)}
-#reproductor #marco-spotify:empty::after{
-  content:'cargando…';display:grid;place-items:center;height:80px;
-  font-size:.8rem;color:var(--tinta-suave);
-}
+#reproductor .mini:active{transform:scale(.9)}
+#reproductor.sonando .mini{background:var(--flor-amarilla-h)}
 #link-spotify{
-  flex:0 0 auto;text-decoration:none;
-  font-size:.68rem;font-weight:800;letter-spacing:.02em;
-  color:var(--cafe);background:var(--menta-clara);
-  border:2px solid var(--cafe);border-radius:999px;
-  padding:5px 10px;white-space:nowrap;
+  flex:0 0 auto;display:grid;place-items:center;
+  width:30px;height:30px;border-radius:50%;
 }
-#link-spotify:active{background:var(--menta)}
 
 /* ---------------- accesibilidad ---------------- */
 @media (prefers-reduced-motion:reduce){
@@ -354,15 +357,14 @@ h1.titulo{
 
 /* pantallas bajitas */
 @media (max-height:700px){
-  .cascada{height:calc(var(--alto,300px) * .84)}
-  .cascada .pila{transform:scale(.84)}
-  .cascada.compacta{height:calc(var(--alto-min,140px) * .86)}
-  .cascada.compacta .pila{transform:scale(.38)}
   .pregunta{font-size:clamp(1.55rem,7.2vw,1.9rem)}
-  .pantalla{gap:13px}
-  .opcion{min-height:56px;padding:11px 16px;font-size:1rem}
+  .pantalla{gap:12px}
+  .opcion{min-height:56px;padding:11px 16px;font-size:.98rem}
   .opcion .bolita{width:30px;height:30px}
-  #app.con-musica{padding-bottom:calc(env(safe-area-inset-bottom) + 146px)}
-  .carta{padding:22px 18px 18px}
-  .carta p{font-size:.98rem;line-height:1.65}
+  .ramillete{transform:scale(.82);margin-top:-16px;margin-bottom:-20px}
+  #app.con-musica{padding-bottom:calc(env(safe-area-inset-bottom) + 92px)}
+  .papiro{padding:20px 16px 16px}
+  .papiro p{font-size:.9rem;line-height:1.6}
+  .foto-papiro img{max-height:190px}
+  .tarjeta-poema{padding:22px 18px;min-height:110px}
 }

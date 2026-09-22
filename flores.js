@@ -212,3 +212,40 @@ function guirnalda() {
     ${ramita(.6, -22)}${hoja(.42, -34)}${margarita(.52)}${girasol(.72)}${florLila(.5)}${hoja(.42, 30)}${ramita(.6, 22)}
   </div>`;
 }
+
+/* ------------------------------------------------------------
+   Ramillete bultoso — amarillo + morado mezclados, bien tupido
+   Se usa arriba de casi cada pantalla.
+   ------------------------------------------------------------ */
+const _RAMILLETE_PIEZAS = [
+  (e) => girasol(e),
+  (e) => florLila(e),
+  (e) => margarita(e),
+  (e) => florLila(e, 'var(--lila-clara)'),
+  (e) => girasol(e, 'var(--flor-amarilla-h)'),
+  (e) => margarita(e, 'var(--flor-rosa-clara)'),
+  (e) => hoja(e * .82, -20),
+  (e) => hoja(e * .82, 24),
+  (e) => ramita(e * .9, -16),
+  (e) => ramita(e * .9, 16)
+];
+
+function ramillete(semilla = 0, piezas = 7) {
+  let out = '';
+  for (let i = 0; i < piezas; i++) {
+    const idx = (semilla + i * 3) % _RAMILLETE_PIEZAS.length;
+    const escala = .5 + ((semilla + i * 7) % 4) * .09;
+    out += `<span class="pieza-ramillete" style="--i:${i}">${_RAMILLETE_PIEZAS[idx](escala)}</span>`;
+  }
+  return `<div class="ramillete" aria-hidden="true">${out}</div>`;
+}
+
+/* ------------------------------------------------------------
+   Logo de Spotify (solo decorativo/enlace, no reproduce nada)
+   ------------------------------------------------------------ */
+function iconoSpotify(px = 20) {
+  return `<svg viewBox="0 0 24 24" width="${px}" height="${px}" aria-hidden="true">
+    <circle cx="12" cy="12" r="12" fill="#1ED760"/>
+    <path d="M6.6 8.7c3.2-.9 7.6-.7 10.3.9a.75.75 0 11-.77 1.29c-2.4-1.42-6.3-1.63-9.1-.83a.75.75 0 11-.43-1.44Zm-.28 2.9c2.7-.78 6.8-.63 9.4.9a.7.7 0 11-.7 1.2c-2.3-1.34-6-1.48-8.4-.8a.7.7 0 11-.3-1.3Zm-.24 2.85c2.3-.65 5.7-.5 7.9.78a.6.6 0 11-.6 1.03c-1.9-1.1-5-1.24-7-.68a.6.6 0 11-.3-1.13Z" fill="#053018"/>
+  </svg>`;
+}

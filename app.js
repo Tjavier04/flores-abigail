@@ -1,50 +1,20 @@
 /* ================================================================
-   app.js — el jueguito 🌼
+   app.js — el jueguito de mi niña 🌻💜
    ================================================================ */
 
 const app = document.getElementById('app');
 const capaConfeti = document.getElementById('confeti');
 
 const estado = {
-  ronda: 0,
   cancion: null,
-  fotos: [],   // rutas de fotos que sí existen
-  usadas: 0,
-  gen: 0       // para que los temporizadores no toquen una pantalla vieja
+  preguntaActual: 0,
+  poemaActual: 0,
+  gen: 0
 };
 
 const FLORES = { girasol, margarita, tulipan, ramita, florLila, florBlanca, hoja, rama };
 const dibuja = (nombre, escala) => (FLORES[nombre] || girasol)(escala);
-
-/* ---------------------------------------------------------------
-   Fotos: busca fotos/f1 … fotos/f30 (.jpg .jpeg .png .webp)
-   Si no hay ninguna, caen flores dibujadas.
-   --------------------------------------------------------------- */
-function probar(ruta) {
-  return new Promise(ok => {
-    const img = new Image();
-    img.onload = () => ok(img.naturalWidth > 0 ? ruta : null);
-    img.onerror = () => ok(null);
-    img.src = ruta;
-  });
-}
-
-async function buscarFotos() {
-  const exts = ['jpg', 'jpeg', 'png', 'webp'];
-  const halladas = [];
-  let fallos = 0;
-  for (let i = 1; i <= 30 && fallos < 4; i++) {
-    let r = null;
-    for (const e of exts) { r = await probar(`fotos/f${i}.${e}`); if (r) break; }
-    if (r) { halladas.push(r); fallos = 0; } else fallos++;
-  }
-  estado.fotos = halladas;
-}
-
-function siguienteFoto() {
-  if (!estado.fotos.length) return null;
-  return estado.fotos[estado.usadas++ % estado.fotos.length];
-}
+const FLORES_PREGUNTA = ['girasol', 'florLila', 'margarita', 'tulipan'];
 
 /* ---------------------------------------------------------------
    Utilidades
@@ -61,114 +31,55 @@ function pintar(html, despues) {
   };
   if (vieja) { vieja.classList.add('saliendo'); setTimeout(meter, 300); }
   else meter();
+  lluviaPetalos(14);
 }
 
 const vigente = g => estado.gen === g;
 
-function progreso(indice) {
-  return `<div class="progreso" aria-hidden="true">${
-    CONTENIDO.rondas.map((_, i) =>
-      `<span class="${i < indice ? 'hecha' : i === indice ? 'activa' : ''}"></span>`).join('')
-  }</div>`;
-}
-
 function lluviaPetalos(cantidad = 26) {
-  const colores = ['#F8DF8C', '#F3D067', '#F2A9C4', '#F9D2E0', '#AAAFEB', '#A6DBD4'];
+  const colores = ['#F8DF8C', '#F3D067', '#F2A9C4', '#F9D2E0', '#AAAFEB', '#8E93E6', '#A6DBD4'];
   for (let i = 0; i < cantidad; i++) {
     const p = document.createElement('div');
     p.className = 'petalo';
     p.innerHTML = petalo(colores[i % colores.length]);
     p.style.left = Math.random() * 100 + 'vw';
-    p.style.setProperty('--dx', (Math.random() * 140 - 70) + 'px');
+    p.style.setProperty('--dx', (Math.random() * 150 - 75) + 'px');
     p.style.setProperty('--rot', (Math.random() * 900 - 300) + 'deg');
-    const dur = 2.8 + Math.random() * 2.4;
+    const dur = 2.8 + Math.random() * 2.6;
     p.style.animationDuration = dur + 's';
-    p.style.animationDelay = (Math.random() * .7) + 's';
+    p.style.animationDelay = (Math.random() * .8) + 's';
     capaConfeti.appendChild(p);
     setTimeout(() => p.remove(), (dur + 1.2) * 1000);
   }
 }
 
 /* ---------------------------------------------------------------
-   Cascada de fotos
-   --------------------------------------------------------------- */
-const SITIOS = [
-  { x: -76, y: 0,   giro: -9, ini: -22 },
-  { x: 74,  y: 18,  giro: 8,  ini: 20 },
-  { x: -30, y: 74,  giro: 5,  ini: -14 },
-  { x: 56,  y: 100, giro: -7, ini: 16 },
-  { x: -84, y: 116, giro: 11, ini: -26 },
-  { x: 6,   y: 36,  giro: -3, ini: 10 }
-];
-
-function cascada(cuantas) {
-  const usados = [];
-  const trozos = [];
-  for (let i = 0; i < cuantas; i++) {
-    const s = SITIOS[i % SITIOS.length];
-    usados.push(s);
-    const ruta = siguienteFoto();
-    const dentro = ruta
-      ? `<img src="${ruta}" alt="" loading="eager">`
-      : `<div class="marco">${dibuja(['girasol', 'margarita', 'florLila', 'florBlanca', 'tulipan'][i % 5], .95)}</div>`;
-    trozos.push(`<figure class="foto" style="
-        left:calc(50% + ${s.x}px); top:${s.y}px; z-index:${i};
-        --giro:${s.giro}deg; --giro-ini:${s.ini}deg;
-        animation-delay:${.12 + i * .22}s">${dentro}</figure>`);
-  }
-  const alto = Math.max(...usados.map(s => s.y)) + 198;
-  return `<div class="cascada" style="--alto:${alto}px;--alto-min:${Math.round(alto * .44)}px">
-            <div class="pila">${trozos.join('')}</div>
-          </div>`;
-}
-
-/* ---------------------------------------------------------------
-   Música (Spotify)
+   Música local (mp3)
    --------------------------------------------------------------- */
 const reproductor = {
   caja: document.getElementById('reproductor'),
-  marco: document.getElementById('marco-spotify'),
+  audio: document.getElementById('audio'),
   titulo: document.getElementById('titulo-cancion'),
   enlace: document.getElementById('link-spotify'),
-  controlador: null,
-
-  embedSimple(id) {
-    this.marco.innerHTML =
-      `<iframe title="Reproductor" src="https://open.spotify.com/embed/track/${id}?utm_source=generator&theme=0"
-         width="100%" height="80" frameborder="0" loading="eager"
-         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
-  },
+  boton: document.getElementById('boton-play'),
 
   poner(cancion) {
     this.titulo.textContent = cancion.titulo;
-    this.enlace.href = `https://open.spotify.com/track/${cancion.id}`;
+    this.enlace.href = cancion.enlace;
+    this.audio.src = cancion.archivo;
     this.caja.hidden = false;
     app.classList.add('con-musica');
-
-    const arrancar = (API) => {
-      if (this.controlador) return;
-      try {
-        API.createController(this.marco, { uri: `spotify:track:${cancion.id}`, width: '100%', height: 80 },
-          (ctrl) => {
-            this.controlador = ctrl;
-            setTimeout(() => { try { ctrl.play(); } catch (e) {} }, 350);
-          });
-      } catch (e) { this.embedSimple(cancion.id); }
-    };
-
-    if (window.__spotifyAPI) { arrancar(window.__spotifyAPI); return; }
-    window.onSpotifyIframeApiReady = (API) => { window.__spotifyAPI = API; arrancar(API); };
-
-    // si la API tarda demasiado, ponemos el reproductor normal
-    setTimeout(() => {
-      if (!this.controlador && !this.marco.querySelector('iframe')) this.embedSimple(cancion.id);
-    }, 2600);
+    this.audio.play().then(() => this.marcarReproduciendo(true)).catch(() => this.marcarReproduciendo(false));
   },
 
-  plegar() {
-    this.caja.classList.toggle('plegado');
-    document.getElementById('boton-plegar').textContent =
-      this.caja.classList.contains('plegado') ? '▴' : '▾';
+  alternar() {
+    if (this.audio.paused) this.audio.play().then(() => this.marcarReproduciendo(true)).catch(() => {});
+    else { this.audio.pause(); this.marcarReproduciendo(false); }
+  },
+
+  marcarReproduciendo(si) {
+    this.boton.textContent = si ? '⏸' : '▶';
+    this.caja.classList.toggle('sonando', si);
   }
 };
 
@@ -181,11 +92,11 @@ function portada() {
   const c = CONTENIDO.portada;
   pintar(`
     <section class="pantalla">
-      ${guirnalda()}
-      <p class="sobretitulo">${c.sobretitulo}</p>
+      ${ramillete(1, 8)}
+      <p class="sobretitulo">${c.linea1}</p>
       <h1 class="nombre">${c.nombre}</h1>
-      <div class="flor-grande">${girasol(2)}</div>
-      <p class="sub">${c.subtitulo}</p>
+      <p class="sub">${c.linea2}</p>
+      <div class="flor-grande">${girasol(1.7)}${florLila(1.3)}</div>
       <button class="boton" onclick="elegirCancion()">${c.boton}</button>
     </section>`);
 }
@@ -195,7 +106,7 @@ function elegirCancion() {
   const m = CONTENIDO.musica;
   pintar(`
     <section class="pantalla">
-      ${guirnalda()}
+      ${ramillete(2, 7)}
       <h1 class="titulo">${m.titulo}</h1>
       <div class="canciones">
         ${m.canciones.map((s, i) => `
@@ -203,7 +114,7 @@ function elegirCancion() {
             <span class="flor-mini">${dibuja(s.flor, .9)}</span>
             <span class="txt">
               <span class="t">${s.titulo}</span>
-              <span class="a">${s.artista}</span>
+              <span class="a">${iconoSpotify(13)} Spotify</span>
             </span>
           </button>`).join('')}
       </div>
@@ -215,125 +126,165 @@ function tomarCancion(i, el) {
   estado.cancion = CONTENIDO.musica.canciones[i];
   document.querySelectorAll('.cancion').forEach(c => { c.classList.remove('elegida'); c.disabled = true; });
   el.classList.add('elegida');
-  lluviaPetalos(16);
+  lluviaPetalos(20);
   reproductor.poner(estado.cancion);
-  setTimeout(() => { estado.ronda = 0; ronda(); }, 750);
+  setTimeout(mensajeIntro, 750);
 }
 
-/* 3 · Ronda: primero caen las fotos, luego aparece la pregunta */
-function ronda() {
-  const r = CONTENIDO.rondas[estado.ronda];
-  if (!r) return jardin();
-
-  const espera = (.12 + (r.fotos - 1) * .22 + .95 + .5) * 1000;
-
+/* 3 · Mensaje antes del juego (texto tal cual, sin tocar) */
+function mensajeIntro() {
   pintar(`
     <section class="pantalla">
-      ${progreso(estado.ronda)}
-      <p class="sobretitulo">${r.presentacion}</p>
-      ${cascada(r.fotos)}
-      <div class="bloque" hidden>
-        <p class="pregunta">${r.pregunta}</p>
-        <div class="opciones">
-          ${r.opciones.map((o, i) => `
-            <button class="opcion" onclick="responder(this)">
-              <span class="bolita">${dibuja(['girasol', 'margarita', 'florLila'][i % 3], .42)}</span>
-              <span>${o}</span>
-            </button>`).join('')}
-        </div>
+      ${ramillete(3, 6)}
+      <div class="carta-mini">
+        ${CONTENIDO.intro.map(p => `<p>${p}</p>`).join('')}
       </div>
-    </section>`,
-  (g) => {
-    setTimeout(() => {
-      if (!vigente(g)) return;
-      const c = document.querySelector('.cascada');
-      const b = document.querySelector('.bloque');
-      if (!c || !b) return;
-      c.classList.add('compacta');
-      b.hidden = false;
-      b.classList.add('aparece');
-    }, espera);
-  });
+      <button class="boton" onclick="pregunta(0)">${CONTENIDO.introBoton}</button>
+    </section>`);
 }
 
-function responder(el) {
-  document.querySelectorAll('.opcion').forEach(o => { o.classList.remove('elegida'); o.disabled = true; });
-  el.classList.add('elegida');
-  setTimeout(celebrar, 480);
-}
-
-/* 4 · Celebración */
-function celebrar() {
-  const c = CONTENIDO.celebracion;
-  const frase = c.frases[estado.ronda % c.frases.length];
-  lluviaPetalos(34);
-
+/* ---------------------------------------------------------------
+   Motor de preguntas con reintento (se reusa para las 4 + la del autor)
+   --------------------------------------------------------------- */
+function pantallaPregunta({ etiqueta, pregunta, opciones, correcta, flor, progresoActual, progresoTotal }, alAcertar) {
+  const semilla = (progresoActual ?? 0) + 5;
   pintar(`
     <section class="pantalla">
-      ${progreso(estado.ronda)}
+      ${progresoTotal ? `<div class="progreso" aria-hidden="true">${
+        Array.from({ length: progresoTotal }, (_, i) =>
+          `<span class="${i < progresoActual ? 'hecha' : i === progresoActual ? 'activa' : ''}"></span>`).join('')
+      }</div>` : ''}
+      ${ramillete(semilla, 7)}
+      ${etiqueta ? `<p class="sobretitulo">${etiqueta}</p>` : ''}
+      <p class="pregunta">${pregunta}</p>
+      <div class="opciones">
+        ${opciones.map((o, i) => `
+          <button class="opcion" data-i="${i}" onclick="_responderPregunta(${i})">
+            <span class="bolita">${dibuja(FLORES_PREGUNTA[((flor ?? 0) + i) % FLORES_PREGUNTA.length], .4)}</span>
+            <span>${o}</span>
+          </button>`).join('')}
+      </div>
+      <p class="pie-error" id="pie-error">&nbsp;</p>
+    </section>`);
+
+  window._responderPregunta = (i) => {
+    const btn = document.querySelector(`.opcion[data-i="${i}"]`);
+    if (!btn || btn.disabled) return;
+    if (i === correcta) {
+      document.querySelectorAll('.opcion').forEach(o => o.disabled = true);
+      btn.classList.add('correcta');
+      lluviaPetalos(24);
+      setTimeout(alAcertar, 850);
+    } else {
+      btn.classList.remove('incorrecta');
+      void btn.offsetWidth; // reinicia la animación si se repite
+      btn.classList.add('incorrecta');
+      const pie = document.getElementById('pie-error');
+      if (pie) pie.textContent = CONTENIDO.frasesError[Math.floor(Math.random() * CONTENIDO.frasesError.length)];
+      setTimeout(() => btn.classList.remove('incorrecta'), 650);
+    }
+  };
+}
+
+/* 4 · Las 4 preguntas */
+function pregunta(i) {
+  const total = CONTENIDO.preguntas.length;
+  if (i >= total) return celebracionFinal();
+  const p = CONTENIDO.preguntas[i];
+  pantallaPregunta({
+    pregunta: p.pregunta,
+    opciones: p.opciones,
+    correcta: p.correcta,
+    flor: p.flor,
+    progresoActual: i,
+    progresoTotal: total
+  }, () => pregunta(i + 1));
+}
+
+/* 5 · Celebración (una sola vez) */
+function celebracionFinal() {
+  const c = CONTENIDO.celebracionFinal;
+  lluviaPetalos(40);
+  pintar(`
+    <section class="pantalla">
+      ${ramillete(9, 8)}
       <div class="celebra">
         <div class="flor-grande">${corazon(1.6)}</div>
         <p class="grito">${c.grito}</p>
-        <p class="beso">${c.beso}</p>
+        <p class="emoji-grande">${c.emoji}</p>
       </div>
-      <p class="sub">${frase}</p>
-      <button class="boton" onclick="avanzar()">${c.boton}</button>
+      <p class="sub">${c.texto}</p>
+      <button class="boton" onclick="poema(0)">${c.boton}</button>
     </section>`);
-
-  setTimeout(() => lluviaPetalos(16), 550);
+  setTimeout(() => lluviaPetalos(20), 500);
 }
 
-function avanzar() {
-  estado.ronda++;
-  if (estado.ronda < CONTENIDO.rondas.length) ronda();
-  else jardin();
-}
-
-/* 5 · El jardín */
-function jardin() {
-  const f = CONTENIDO.final;
-  const tallos = CONTENIDO.rondas.map((r, i) => {
-    const alto = 38 + (i % 4) * 22 + (r.flor === 'tulipan' ? 22 : 0);
-    return `<div class="tallo" style="animation-delay:${.15 + i * .18}s">
-        ${dibuja(r.flor, .82)}
-        <i style="height:${alto}px"></i>
-      </div>`;
-  }).join('');
-
+/* 6 · El poema — tarjetitas que se deslizan, toca para seguir */
+function poema(i) {
+  const lineas = CONTENIDO.poema;
+  if (i >= lineas.length) return preguntaAutor();
+  const semilla = i + 11;
   pintar(`
-    <section class="pantalla">
-      <h1 class="titulo">${f.tituloJardin}</h1>
-      <p class="sub">${f.textoJardin}</p>
-      <div class="jardin">${tallos}</div>
-      <div class="suelo"></div>
-      <button class="boton" onclick="carta()">${f.botonCarta}</button>
+    <section class="pantalla pantalla-poema" onclick="poema(${i + 1})">
+      ${ramillete(semilla, 6)}
+      <div class="tarjeta-poema">
+        <p>${lineas[i].replace(/\n/g, '<br>')}</p>
+      </div>
+      <p class="pie pie-poema">${CONTENIDO.poemaPie}</p>
     </section>`);
-
-  setTimeout(() => lluviaPetalos(20), 650);
 }
 
-/* 6 · La carta */
-function carta() {
-  const f = CONTENIDO.final;
+/* 7 · Pregunta del autor (mismo motor) */
+function preguntaAutor() {
+  const p = CONTENIDO.preguntaAutor;
+  pantallaPregunta({
+    etiqueta: p.etiqueta,
+    pregunta: p.pregunta,
+    opciones: p.opciones,
+    correcta: p.correcta,
+    flor: 0
+  }, papiroFrida);
+}
+
+/* 8 · Papiro de Frida */
+function papiroFrida() {
+  const f = CONTENIDO.papiroFrida;
   lluviaPetalos(18);
-
   pintar(`
-    <section class="pantalla pantalla-carta">
-      <div class="flor-grande">${sobre(.78)}</div>
-      <article class="carta">
-        <span class="esquina ar">${ramita(.62, 28)}</span>
-        <span class="esquina ai">${girasol(.62)}</span>
-        <h2>${f.cartaTitulo}</h2>
-        ${f.carta.map(p => `<p>${p}</p>`).join('')}
-        <p class="firma">${f.firma}</p>
+    <section class="pantalla pantalla-papiro">
+      ${ramillete(13, 5)}
+      <article class="papiro">
+        <span class="esquina-papiro ar">${florLila(.6)}</span>
+        <span class="esquina-papiro ai">${girasol(.55)}</span>
+        <h2>${f.titulo}</h2>
+        <figure class="foto-papiro">
+          <img src="${f.imagen}" alt="${f.imagenAlt}" loading="eager">
+        </figure>
+        ${f.texto.map(p => `<p>${p}</p>`).join('')}
       </article>
-      <button class="boton boton-fantasma" onclick="reiniciar()">${f.botonReiniciar}</button>
+      <button class="boton" onclick="final()">${f.boton}</button>
     </section>`);
+}
+
+/* 9 · Final: foto grande + frase + One more */
+function final() {
+  const f = CONTENIDO.final;
+  lluviaPetalos(30);
+  pintar(`
+    <section class="pantalla pantalla-final">
+      ${ramillete(17, 8)}
+      <figure class="foto-final">
+        <img src="${f.imagen}" alt="${f.imagenAlt}" loading="eager">
+      </figure>
+      <p class="frase-final">${f.texto}</p>
+      <button class="boton boton-fantasma" onclick="reiniciar()">${f.boton}</button>
+    </section>`);
+  setTimeout(() => lluviaPetalos(26), 500);
 }
 
 function reiniciar() {
-  estado.ronda = 0;
-  estado.usadas = 0;
+  estado.preguntaActual = 0;
+  estado.poemaActual = 0;
   portada();
 }
 
@@ -344,9 +295,7 @@ function reiniciar() {
   document.body.insertAdjacentHTML('beforeend', `
     <div class="fondo-flor" style="top:5svh;left:-18px">${ramita(.85, -14)}</div>
     <div class="fondo-flor" style="top:34svh;right:-24px;animation-delay:.8s">${rama(.8, 18)}</div>
-    <div class="fondo-flor" style="bottom:22svh;left:-20px;animation-delay:2.1s">${hoja(.5, 24)}</div>
+    <div class="fondo-flor" style="bottom:22svh;left:-20px;animation-delay:2.1s">${florLila(.55, 'var(--lila-clara)')}</div>
     <div class="fondo-flor" style="bottom:34svh;right:-16px;animation-delay:1.5s">${ramita(.9, 165)}</div>`);
-
   portada();
-  buscarFotos();   // en segundo plano
 })();

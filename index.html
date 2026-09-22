@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>Flores amarillas para Abigail</title>
+<title>mi niña</title>
 <meta name="description" content="Un jardincito interactivo hecho con mucho amor.">
 <meta name="theme-color" content="#FFFCF5">
 <meta name="mobile-web-app-capable" content="yes">
@@ -26,19 +26,21 @@
 
 <div id="confeti" aria-hidden="true"></div>
 
-<!-- Reproductor fijo, abajo, plegable -->
+<!-- Reproductor fijo, abajo — audio local, sin depender de Spotify -->
 <aside id="reproductor" hidden aria-label="Música">
+  <audio id="audio" loop preload="auto"></audio>
   <div class="barra">
-    <span aria-hidden="true">🎧</span>
+    <button class="mini" id="boton-play" onclick="reproductor.alternar()" aria-label="Reproducir o pausar">▶</button>
     <span class="crece" id="titulo-cancion"></span>
-    <a id="link-spotify" href="https://open.spotify.com" target="_blank" rel="noopener"
-       aria-label="Abrir la canción en Spotify">Spotify ↗</a>
-    <button class="mini" id="boton-plegar" onclick="reproductor.plegar()" aria-label="Ocultar o mostrar el reproductor">▾</button>
+    <a id="link-spotify" href="https://open.spotify.com" target="_blank" rel="noopener" aria-label="Ver en Spotify">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <circle cx="12" cy="12" r="12" fill="#1ED760"/>
+        <path d="M6.6 8.7c3.2-.9 7.6-.7 10.3.9a.75.75 0 11-.77 1.29c-2.4-1.42-6.3-1.63-9.1-.83a.75.75 0 11-.43-1.44Zm-.28 2.9c2.7-.78 6.8-.63 9.4.9a.7.7 0 11-.7 1.2c-2.3-1.34-6-1.48-8.4-.8a.7.7 0 11-.3-1.3Zm-.24 2.85c2.3-.65 5.7-.5 7.9.78a.6.6 0 11-.6 1.03c-1.9-1.1-5-1.24-7-.68a.6.6 0 11-.3-1.13Z" fill="#053018"/>
+      </svg>
+    </a>
   </div>
-  <div id="marco-spotify"></div>
 </aside>
 
-<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 <script src="contenido.js"></script>
 <script src="flores.js"></script>
 <script src="app.js"></script>
