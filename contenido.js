@@ -61,19 +61,14 @@ const CONTENIDO = {
     }
   ],
 
-  /* frases si se equivoca (rotan) */
-  frasesError: [
-    'no mi cielo, esa no es… intenta otra vez',
-    'uy no, mi preciosa, prueba de nuevo',
-    'casi, mi amor, dale otra vez',
-    'esa no, mi niña, tú puedes 🥺'
-  ],
+  /* frase si se equivoca (no tocar el texto) */
+  fraseError: 'nu mi preciosa, otra ve',
 
-  /* ---------- CELEBRACIÓN FINAL DEL JUEGO (una sola vez) ---------- */
+  /* ---------- CELEBRACIÓN FINAL DEL JUEGO (una sola vez) — no tocar el texto ---------- */
   celebracionFinal: {
     grito: 'MMMWHUA',
     emoji: '💗',
-    texto: 'Te sabes hasta nuestras fechas de memoria, mi tesorito.',
+    texto: 'Muy biennn mi vidita, ahora chi',
     boton: 'Sigamos 🌸'
   },
 
@@ -112,11 +107,24 @@ const CONTENIDO = {
     boton: 'Seguir 🌷'
   },
 
-  /* ---------- FINAL (no tocar el texto en mayúsculas ni "One more") ---------- */
+  /* ---------- FINAL: foto de nosotros (no tocar el texto en mayúsculas) ---------- */
   final: {
     imagen: 'img/beso.webp',
     imagenAlt: 'nosotros',
     texto: 'TE CIELO MUCHISIMO MI AMOR',
-    boton: 'One more 🌼'
+    boton: 'Sigue leyendo 💌'
+  },
+
+  /* ---------- DESPEDIDA (no tocar el texto del PD ni "One moreeee???") ---------- */
+  despedida: {
+    imagen: 'img/ramito.webp',
+    imagenAlt: 'un ramito para ti',
+    texto: [
+      'PD: Sabía que elegirías',
+      '"I wanna be your boyfriend"',
+      '😸😸😸'
+    ],
+    texto2: 'Aún no es una carta como tal, lo considero un mensaje lindo, y le dejo un ramito como esperaré dárselo presencialmente, esto es una disculpa por no poder hacerlo 😸💕. Pero las siguientes flores irán acompañadas de un fuerte abrazo, un cálido besito a mi nena hermosa, y una carta con mi propia letra mi amor.',
+    boton: 'One moreeee??? 🌷'
   }
 };

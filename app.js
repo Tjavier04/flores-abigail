@@ -31,25 +31,27 @@ function pintar(html, despues) {
   };
   if (vieja) { vieja.classList.add('saliendo'); setTimeout(meter, 300); }
   else meter();
-  lluviaPetalos(14);
+  lluviaPetalos(55); // que cubran la pantalla en cada transición
 }
 
 const vigente = g => estado.gen === g;
 
 function lluviaPetalos(cantidad = 26) {
-  const colores = ['#F8DF8C', '#F3D067', '#F2A9C4', '#F9D2E0', '#AAAFEB', '#8E93E6', '#A6DBD4'];
+  const colores = ['#F8DF8C', '#F3D067', '#F2A9C4', '#F9D2E0', '#AAAFEB', '#8E93E6', '#A6DBD4', '#E14B3E', '#F0A03C'];
   for (let i = 0; i < cantidad; i++) {
     const p = document.createElement('div');
     p.className = 'petalo';
     p.innerHTML = petalo(colores[i % colores.length]);
     p.style.left = Math.random() * 100 + 'vw';
-    p.style.setProperty('--dx', (Math.random() * 150 - 75) + 'px');
+    p.style.setProperty('--dx', (Math.random() * 170 - 85) + 'px');
     p.style.setProperty('--rot', (Math.random() * 900 - 300) + 'deg');
-    const dur = 2.8 + Math.random() * 2.6;
+    const escala = .8 + Math.random() * .7;
+    p.style.transform = `scale(${escala.toFixed(2)})`;
+    const dur = 2.6 + Math.random() * 2.8;
     p.style.animationDuration = dur + 's';
-    p.style.animationDelay = (Math.random() * .8) + 's';
+    p.style.animationDelay = (Math.random() * 1.1) + 's';
     capaConfeti.appendChild(p);
-    setTimeout(() => p.remove(), (dur + 1.2) * 1000);
+    setTimeout(() => p.remove(), (dur + 1.6) * 1000);
   }
 }
 
@@ -173,14 +175,14 @@ function pantallaPregunta({ etiqueta, pregunta, opciones, correcta, flor, progre
     if (i === correcta) {
       document.querySelectorAll('.opcion').forEach(o => o.disabled = true);
       btn.classList.add('correcta');
-      lluviaPetalos(24);
+      lluviaPetalos(70);
       setTimeout(alAcertar, 850);
     } else {
       btn.classList.remove('incorrecta');
       void btn.offsetWidth; // reinicia la animación si se repite
       btn.classList.add('incorrecta');
       const pie = document.getElementById('pie-error');
-      if (pie) pie.textContent = CONTENIDO.frasesError[Math.floor(Math.random() * CONTENIDO.frasesError.length)];
+      if (pie) pie.textContent = CONTENIDO.fraseError;
       setTimeout(() => btn.classList.remove('incorrecta'), 650);
     }
   };
@@ -204,7 +206,7 @@ function pregunta(i) {
 /* 5 · Celebración (una sola vez) */
 function celebracionFinal() {
   const c = CONTENIDO.celebracionFinal;
-  lluviaPetalos(40);
+  lluviaPetalos(90);
   pintar(`
     <section class="pantalla">
       ${ramillete(9, 8)}
@@ -214,24 +216,72 @@ function celebracionFinal() {
         <p class="emoji-grande">${c.emoji}</p>
       </div>
       <p class="sub">${c.texto}</p>
-      <button class="boton" onclick="poema(0)">${c.boton}</button>
+      <button class="boton" onclick="poema()">${c.boton}</button>
     </section>`);
-  setTimeout(() => lluviaPetalos(20), 500);
+  setTimeout(() => lluviaPetalos(50), 450);
 }
 
-/* 6 · El poema — tarjetitas que se deslizan, toca para seguir */
-function poema(i) {
-  const lineas = CONTENIDO.poema;
-  if (i >= lineas.length) return preguntaAutor();
-  const semilla = i + 11;
+/* 6 · El poema — efecto de baraja: toca la carta y se avienta a un lado,
+   revelando la de abajo. Todo dentro de una sola pantalla. */
+function poema() {
+  const semilla = 11;
   pintar(`
-    <section class="pantalla pantalla-poema" onclick="poema(${i + 1})">
+    <section class="pantalla pantalla-poema">
       ${ramillete(semilla, 6)}
-      <div class="tarjeta-poema">
-        <p>${lineas[i].replace(/\n/g, '<br>')}</p>
-      </div>
-      <p class="pie pie-poema">${CONTENIDO.poemaPie}</p>
-    </section>`);
+      <div class="mazo" id="mazo"></div>
+      <p class="pie pie-poema" id="pie-poema">${CONTENIDO.poemaPie}</p>
+    </section>`,
+  (g) => { if (vigente(g)) _iniciarMazo(g); });
+}
+
+function _iniciarMazo(gen) {
+  const lineas = CONTENIDO.poema;
+  const mazo = document.getElementById('mazo');
+  let i = 0;
+  let animando = false;
+
+  const rotacion = (n) => (((n * 47) % 11) - 5) * 1; // -5..5, determinístico
+
+  const pintarCarta = (idx, clase) => {
+    const el = document.createElement('div');
+    el.className = `carta-mazo ${clase}`;
+    el.style.setProperty('--r', rotacion(idx) + 'deg');
+    el.innerHTML = `<p>${lineas[idx].replace(/\n/g, '<br>')}</p>`;
+    return el;
+  };
+
+  const dibujarPar = () => {
+    mazo.innerHTML = '';
+    if (i < lineas.length) mazo.appendChild(pintarCarta(i, 'actual'));
+    if (i + 1 < lineas.length) mazo.appendChild(pintarCarta(i + 1, 'siguiente'));
+  };
+
+  const tocar = () => {
+    if (!vigente(gen) || animando) return;
+    const actual = mazo.querySelector('.carta-mazo.actual');
+    if (!actual) return;
+    animando = true;
+    lluviaPetalos(22);
+    const haciaLaIzq = i % 2 === 0;
+    actual.style.setProperty('--tx', haciaLaIzq ? '-160%' : '160%');
+    actual.style.setProperty('--tr', haciaLaIzq ? '-28deg' : '28deg');
+    actual.classList.remove('actual');
+    actual.classList.add('tirada');
+    const siguiente = mazo.querySelector('.carta-mazo.siguiente');
+    if (siguiente) { siguiente.classList.remove('siguiente'); siguiente.classList.add('actual'); }
+
+    setTimeout(() => {
+      if (!vigente(gen)) return;
+      actual.remove();
+      i++;
+      if (i >= lineas.length) { preguntaAutor(); return; }
+      if (i + 1 < lineas.length) mazo.appendChild(pintarCarta(i + 1, 'siguiente'));
+      animando = false;
+    }, 480);
+  };
+
+  mazo.onclick = tocar;
+  dibujarPar();
 }
 
 /* 7 · Pregunta del autor (mismo motor) */
@@ -249,7 +299,7 @@ function preguntaAutor() {
 /* 8 · Papiro de Frida */
 function papiroFrida() {
   const f = CONTENIDO.papiroFrida;
-  lluviaPetalos(18);
+  lluviaPetalos(55);
   pintar(`
     <section class="pantalla pantalla-papiro">
       ${ramillete(13, 5)}
@@ -266,10 +316,10 @@ function papiroFrida() {
     </section>`);
 }
 
-/* 9 · Final: foto grande + frase + One more */
+/* 9 · Final: foto grande + frase */
 function final() {
   const f = CONTENIDO.final;
-  lluviaPetalos(30);
+  lluviaPetalos(90);
   pintar(`
     <section class="pantalla pantalla-final">
       ${ramillete(17, 8)}
@@ -277,9 +327,27 @@ function final() {
         <img src="${f.imagen}" alt="${f.imagenAlt}" loading="eager">
       </figure>
       <p class="frase-final">${f.texto}</p>
-      <button class="boton boton-fantasma" onclick="reiniciar()">${f.boton}</button>
+      <button class="boton boton-fantasma" onclick="despedida()">${f.boton}</button>
     </section>`);
-  setTimeout(() => lluviaPetalos(26), 500);
+  setTimeout(() => lluviaPetalos(50), 450);
+}
+
+/* 10 · Despedida: el ramito + PD + One moreeee??? */
+function despedida() {
+  const d = CONTENIDO.despedida;
+  lluviaPetalos(60);
+  pintar(`
+    <section class="pantalla pantalla-despedida">
+      <figure class="foto-ramito">
+        <img src="${d.imagen}" alt="${d.imagenAlt}" loading="eager">
+      </figure>
+      <div class="pd">
+        ${d.texto.map(l => `<p>${l}</p>`).join('')}
+      </div>
+      <p class="sub">${d.texto2}</p>
+      <button class="boton" onclick="reiniciar()">${d.boton}</button>
+    </section>`);
+  setTimeout(() => lluviaPetalos(60), 500);
 }
 
 function reiniciar() {

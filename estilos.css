@@ -24,6 +24,8 @@
   --lila-fuerte:#8E93E6;
   --mostaza:#A9761A;
   --rojo-suave:#E98787;
+  --rojo-amapola:#E14B3E;
+  --naranja-lirio:#F0A03C;
 
   --sombra:0 8px 0 rgba(91,65,55,.13);
   --sombra-suave:0 4px 0 rgba(91,65,55,.10);
@@ -244,18 +246,37 @@ h1.titulo{
 .carta-mini p{font-size:1rem;line-height:1.68;margin:0 0 12px;color:#5E4A3E;white-space:pre-line}
 .carta-mini p:last-child{margin-bottom:0}
 
-/* ---------------- poema (tarjetitas deslizables) ---------------- */
-.pantalla-poema{cursor:pointer;gap:20px}
-.tarjeta-poema{
-  width:100%;max-width:340px;min-height:140px;
+/* ---------------- poema — efecto de baraja ---------------- */
+.pantalla-poema{gap:20px}
+.mazo{
+  position:relative;width:100%;max-width:340px;min-height:170px;
+  perspective:800px;
+}
+.carta-mazo{
+  position:absolute;inset:0;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   background:#fff;border:var(--borde);border-radius:var(--radio);
-  padding:30px 22px;box-shadow:var(--sombra);
+  padding:28px 22px;box-shadow:var(--sombra);
+  transition:transform .45s cubic-bezier(.22,1,.36,1),opacity .4s;
 }
-.tarjeta-poema p{
+.carta-mazo p{
   font-family:var(--script);font-weight:700;
-  font-size:clamp(1.5rem,7vw,1.95rem);line-height:1.35;
+  font-size:clamp(1.45rem,6.8vw,1.9rem);line-height:1.32;
   color:var(--cafe);margin:0;text-wrap:balance;
+}
+.carta-mazo.siguiente{
+  transform:scale(.9) translateY(14px) rotate(calc(var(--r,-3deg) * -1));
+  opacity:.75;z-index:1;box-shadow:var(--sombra-suave);
+}
+.carta-mazo.actual{
+  transform:rotate(0deg);z-index:2;
+  animation:entrarCarta .4s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes entrarCarta{from{transform:scale(.9) translateY(14px) rotate(var(--r,0deg));opacity:.75}to{transform:rotate(0deg);opacity:1}}
+.carta-mazo.tirada{
+  transition:transform .48s cubic-bezier(.55,0,1,.45),opacity .42s;
+  transform:translateX(var(--tx,-160%)) rotate(var(--tr,-28deg));
+  opacity:0;z-index:3;pointer-events:none;
 }
 .pie-poema{animation:parpadea 1.8s ease-in-out infinite}
 @keyframes parpadea{0%,100%{opacity:.5}50%{opacity:1}}
@@ -301,6 +322,23 @@ h1.titulo{
   color:var(--lila-fuerte);margin:4px 0 0;text-wrap:balance;
   text-shadow:0 2px 0 rgba(255,255,255,.7);
 }
+
+/* ---------------- despedida (el ramito + PD) ---------------- */
+.pantalla-despedida{justify-content:flex-start;padding-top:6px;gap:14px}
+.foto-ramito{
+  width:100%;max-width:300px;margin:0;
+  border-radius:var(--radio);overflow:hidden;
+  border:var(--borde);box-shadow:var(--sombra);
+  background:#FBF6E9;
+}
+.foto-ramito img{display:block;width:100%;object-fit:cover}
+.pd{width:100%;max-width:360px}
+.pd p{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(1.05rem,4.6vw,1.25rem);line-height:1.4;
+  color:var(--cafe);margin:0 0 2px;text-wrap:balance;
+}
+.pd p:nth-child(2){font-family:var(--script);font-size:clamp(1.3rem,5.6vw,1.6rem);color:var(--mostaza)}
 
 /* ---------------- adornos ---------------- */
 .flor-grande{animation:mecer 5s ease-in-out infinite;transform-origin:50% 90%;display:flex;justify-content:center}

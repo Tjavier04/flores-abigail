@@ -175,7 +175,7 @@ function rama(escala = 1, giro = 0) {
    Pétalo suelto (confeti)
    ------------------------------------------------------------ */
 function petalo(color) {
-  return `<svg viewBox="-14 -22 28 44" width="17" height="27" fill="none" aria-hidden="true">
+  return `<svg viewBox="-14 -22 28 44" width="23" height="36" fill="none" aria-hidden="true">
     <path d="M0 18 C -11 8 -12 -10 0 -19 C 12 -10 11 8 0 18 Z" fill="${color}" stroke="#5B4137" stroke-width="2.4" stroke-linejoin="round"/>
   </svg>`;
 }
@@ -205,6 +205,42 @@ function sobre(escala = 1) {
 }
 
 /* ------------------------------------------------------------
+   Amapola roja — pétalos arrugaditos, centro oscuro
+   ------------------------------------------------------------ */
+function amapola(escala = 1, color = 'var(--rojo-amapola)') {
+  let petalos = '';
+  for (let i = 0; i < 4; i++) {
+    const g = 90 * i + 45;
+    petalos += `<path d="M0 -4 C -20 -10 -28 -26 -20 -38 C -12 -48 10 -46 14 -34 C 18 -22 14 -8 0 -4 Z"
+      transform="rotate(${g})" fill="${color}" stroke="${CAFE}" stroke-width="${GRUESO}" stroke-linejoin="round"/>`;
+  }
+  return svg(`
+    <g>${petalos}</g>
+    <circle r="10" fill="#2B2118" stroke="${CAFE}" stroke-width="2"/>
+    ${anillo(9.5, 8, 1.4, '#4A3A28')}
+    <circle r="3" fill="#4A3A28"/>`, 62 * escala);
+}
+
+/* ------------------------------------------------------------
+   Lirio naranja — pétalos delgados curvos + estambres
+   ------------------------------------------------------------ */
+function lirio(escala = 1, color = 'var(--naranja-lirio)') {
+  let petalos = '', estambres = '';
+  for (let i = 0; i < 6; i++) {
+    const g = 60 * i;
+    petalos += `<path d="M0 -6 C -6 -18 -9 -32 -3 -44 C -1 -47 1 -47 3 -44 C 9 -32 6 -18 0 -6 Z"
+      transform="rotate(${g})" fill="${color}" stroke="${CAFE}" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M0 -14 L0 -38" transform="rotate(${g})" stroke="#B5540E" stroke-width="1.1" opacity=".55"/>`;
+  }
+  for (let i = 0; i < 5; i++) {
+    const g = 72 * i + 22;
+    estambres += `<g transform="rotate(${g})"><path d="M0 -3 L0 -22" stroke="${CAFE}" stroke-width="1.4"/>
+      <ellipse cx="0" cy="-23" rx="2.6" ry="1.6" fill="#7A4A22" stroke="${CAFE}" stroke-width="1"/></g>`;
+  }
+  return svg(`<g>${petalos}</g>${estambres}<circle r="3.4" fill="${CAFE}"/>`, 62 * escala);
+}
+
+/* ------------------------------------------------------------
    Guirnalda decorativa
    ------------------------------------------------------------ */
 function guirnalda() {
@@ -214,8 +250,8 @@ function guirnalda() {
 }
 
 /* ------------------------------------------------------------
-   Ramillete bultoso — amarillo + morado mezclados, bien tupido
-   Se usa arriba de casi cada pantalla.
+   Ramillete bultoso — amarillo + morado + toques de color,
+   bien tupido. Se usa arriba de casi cada pantalla.
    ------------------------------------------------------------ */
 const _RAMILLETE_PIEZAS = [
   (e) => girasol(e),
@@ -224,6 +260,8 @@ const _RAMILLETE_PIEZAS = [
   (e) => florLila(e, 'var(--lila-clara)'),
   (e) => girasol(e, 'var(--flor-amarilla-h)'),
   (e) => margarita(e, 'var(--flor-rosa-clara)'),
+  (e) => amapola(e * .92),
+  (e) => lirio(e * .92),
   (e) => hoja(e * .82, -20),
   (e) => hoja(e * .82, 24),
   (e) => ramita(e * .9, -16),
