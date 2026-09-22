@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Flores amarillas para Abigail</title>
+<meta name="description" content="Un jardincito interactivo hecho con mucho amor.">
+<meta name="theme-color" content="#FFFCF5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%BB%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%BB%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,900&family=Dancing+Script:wght@600;700&family=Parisienne&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<main id="app"></main>
+
+<div id="confeti" aria-hidden="true"></div>
+
+<!-- Reproductor fijo, abajo, plegable -->
+<aside id="reproductor" hidden aria-label="Música">
+  <div class="barra">
+    <span aria-hidden="true">🎧</span>
+    <span class="crece" id="titulo-cancion"></span>
+    <a id="link-spotify" href="https://open.spotify.com" target="_blank" rel="noopener"
+       aria-label="Abrir la canción en Spotify">Spotify ↗</a>
+    <button class="mini" id="boton-plegar" onclick="reproductor.plegar()" aria-label="Ocultar o mostrar el reproductor">▾</button>
+  </div>
+  <div id="marco-spotify"></div>
+</aside>
+
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+<script src="contenido.js"></script>
+<script src="flores.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
